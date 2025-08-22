@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dirt Bike Builds | Frame-up Restorations</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --dirt-orange: #e65c00;
+            --dirt-brown: #8C6A4F;
+            --dirt-dark: #1A1A1A;
+            --dirt-light: #F5F5F5;
+            --dirt-accent: #00aaff;
+            --button-bg: #2c2c2c;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', 'Segoe UI', sans-serif; line-height: 1.6; color: #333; background-color: var(--dirt-light); overflow-x: hidden; }
+        body.modal-open { overflow: hidden; position: fixed; width: 100%; height: 100%; }
+
+        .top-bar { 
+            background-color: var(--dirt-dark); 
+            color: white; 
+            padding: 15px 30px; 
+            display:flex; 
+            justify-content:space-between; 
+            align-items:center; 
+            position:sticky; 
+            top:0; 
+            z-index:1000; 
+            box-shadow:0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        .site-title { font-size:1.8rem; font-weight:800; letter-spacing:1px; text-transform:uppercase }
+        .site-title span { color: var(--dirt-orange) }
+        .top-right-section { display:flex; flex-direction:column; align-items:flex-end; gap:10px }
+        .social-links-top { display:flex; gap:15px; margin-bottom:5px }
+        .social-links-top a { color: white; font-size:1.2rem; transition: all .3s }
+        .social-links-top a:hover { color: var(--dirt-orange); transform: translateY(-2px) }
+        .nav-buttons { display:flex; gap:12px }
+        .nav-button { background: var(--button-bg); color:white; border:1px solid #444; padding:8px 16px; border-radius:5px; cursor:pointer; font-weight:500; transition: all .3s; display:flex; align-items:center; gap:6px; font-size:.9rem }
+        .nav-button:hover { background-color: var(--dirt-orange); border-color: var(--dirt-orange); transform: translateY(-2px) }
+        .nav-button.active { background-color: var(--dirt-orange); border-color: var(--dirt-orange) }
+
+        .hero { text-align:center; background-size: cover; background-position:center; color:white; padding:100px 20px; position:relative; transition: background-image .5s ease; }
+        .hero.builds-hero { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('covers/builds.jpg'); }
+        .hero.projects-hero { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('covers/current.jpg'); }
+        .hero.about-hero { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('covers/about.jpg'); }
+        .hero.partners-hero { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('covers/work.jpg'); }
+        .hero h1 { font-size:3.5rem; font-weight:900; text-transform:uppercase; letter-spacing:3px; margin-bottom:15px; }
+        .hero-subtitle { font-size:1.4rem; margin:0 auto; max-width:600px; padding:12px 20px; background-color: rgba(0,0,0,0.5); border-left:4px solid var(--dirt-orange); text-align:center; margin-top:20px; }
+
+        .container { max-width:1200px; margin:0 auto; padding:40px 20px; }
+        .intro-text { text-align:center; max-width:800px; margin:0 auto 50px; font-size:1.1rem; line-height:1.8; padding:25px; background:white; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.05); }
+        .intro-text p { margin-bottom:0; }
+
+        .section-title { text-align:center; margin:50px 0 30px; position:relative; font-size:2.2rem; text-transform:uppercase; letter-spacing:1px; color:var(--dirt-dark); }
+        .section-title:after { content:""; display:block; height:4px; width:80px; margin:15px auto; background: linear-gradient(to right, var(--dirt-orange), var(--dirt-brown)); border-radius:2px; }
+
+        .gallery { display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:30px; margin:40px 0; }
+        .bike-card { background:white; border-radius:8px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.08); transition: all .3s ease; cursor:pointer; position: relative; }
+        .bike-card:hover { transform: translateY(-10px); box-shadow:0 15px 30px rgba(0,0,0,0.15); }
+        .bike-image { width:100%; height:250px; object-fit:cover; display:block; }
+        .bike-info { padding:20px; }
+        .bike-info h3 { font-size:1.4rem; margin-bottom:10px; color:var(--dirt-dark); }
+        .bike-info p { color:#666; margin-bottom:15px; font-size:.95rem; }
+        .bike-meta { 
+            display:flex; 
+            justify-content:space-between; 
+            color:var(--dirt-brown); 
+            font-size:.9rem; 
+            border-top:1px solid #eee; 
+            padding-top:15px; 
+            margin-top:15px; 
+        }
+
+        /* Sound player styles */
+        .sound-player-container {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        
+        .sound-player-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .sound-control {
+            background: var(--button-bg);
+            color: white;
+            border: 1px solid #444;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all .3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+        }
+        
+        .sound-control:hover {
+            background-color: var(--dirt-orange);
+            border-color: var(--dirt-orange);
+        }
+        
+        .sound-control:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .sound-control:disabled:hover {
+            background: var(--button-bg);
+            border-color: #444;
+        }
+        
+        .sound-time {
+            font-size: 0.85rem;
+            color: #666;
+            margin-left: auto;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--dirt-orange), var(--dirt-brown));
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+        
+        .sound-waves {
+            display: none;
+            justify-content: center;
+            margin-top: 8px;
+            height: 20px;
+        }
+        
+        .sound-waves.active {
+            display: flex;
+        }
+        
+        .sound-waves .wave {
+            width: 3px;
+            height: 100%;
+            background-color: var(--dirt-orange);
+            margin: 0 2px;
+            border-radius: 3px;
+            animation: wave 1.2s infinite ease-in-out;
+        }
+        
+        .sound-waves .wave:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+        
+        .sound-waves .wave:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+        
+        .sound-waves .wave:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+        
+        .sound-waves .wave:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes wave {
+            0%, 100% {
+                transform: scaleY(0.5);
+            }
+            50% {
+                transform: scaleY(1.5);
+            }
+        }
+
+        /* Added dividers for PC view in bike info */
+        @media (min-width: 769px) {
+            .bike-info {
+                position: relative;
+            }
+            .bike-info h3 {
+                padding-bottom: 10px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            .bike-info p {
+                padding-bottom: 15px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+        }
+
+        .content-section { display:none; animation:fadeIn .5s ease; }
+        .content-section.active { display:block; }
+        @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+
+        .about-content{ display:flex; flex-direction:column; align-items:center; gap:30px; margin-top:40px; }
+        .about-text { max-width:800px; text-align:center; font-size:1.1rem; line-height:1.8; }
+
+        .projects-content{ display:flex; flex-direction:column; align-items:center; gap:30px; margin-top:40px; }
+        .project-image{ max-width:100%; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1); }
+        .project-details { max-width:800px; text-align:center; font-size:1.1rem; line-height:1.8; }
+
+        .partners-content{ display:flex; flex-direction:column; align-items:center; gap:30px; margin-top:40px; }
+        .partners-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap:30px; width:100%; max-width:1000px; }
+        .partner-card{ background:white; border-radius:8px; padding:20px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.08); }
+        .partner-card h3{ color:var(--dirt-orange); margin-bottom:10px; }
+
+        .modal{ display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.8); z-index:1100; overflow-y:auto; padding:20px; }
+        .modal-content{ background-color:white; margin:40px auto; padding:30px; border-radius:10px; max-width:1000px; position:relative; animation: modalFadeIn .3s ease; }
+        @keyframes modalFadeIn { from { opacity:0; transform:translateY(-20px) } to { opacity:1; transform:translateY(0) } }
+        .close-modal { position:absolute; top:15px; right:15px; font-size:1.5rem; cursor:pointer; color:#777; transition: color .3s; }
+        .close-modal:hover { color: var(--dirt-orange); }
+
+        .bike-detail-header{ margin-bottom:20px; }
+        .bike-detail-header h2{ font-size:2rem; color:var(--dirt-dark); margin-bottom:10px; }
+        .bike-detail-meta{ display:flex; gap:20px; color:var(--dirt-brown); margin-bottom:20px; }
+
+        .completed-project-section{ margin-bottom:30px; }
+        .completed-project-section h3{ font-size:1.5rem; color:var(--dirt-dark); margin-bottom:15px; padding-bottom:8px; border-bottom:2px solid var(--dirt-orange); }
+        .current-state-section{ margin-bottom:30px; }
+        .current-state-section h3{ font-size:1.5rem; color:var(--dirt-dark); margin-bottom:15px; padding-bottom:8px; border-bottom:2px solid var(--dirt-orange); }
+        .main-cover-image { width:100%; height:350px; object-fit:cover; border-radius:8px; margin-bottom:20px; }
+
+        .rebuilding-process-section{ margin-bottom:30px; }
+        .rebuilding-process-section h3{ font-size:1.5rem; color:var(--dirt-dark); margin-bottom:15px; padding-bottom:8px; border-bottom:2px solid var(--dirt-orange); }
+        .rebuilding-gallery{ display:grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap:15px; margin-bottom:20px; }
+        .rebuilding-image{ width:100%; height:200px; object-fit:cover; border-radius:8px; cursor:pointer; transition: transform .3s; }
+        .rebuilding-image:hover{ transform:scale(1.03); }
+
+        .before-section{ margin-bottom:30px; }
+        .before-section h3{ font-size:1.5rem; color:var(--dirt-dark); margin-bottom:15px; padding-bottom:8px; border-bottom:2px solid var(--dirt-orange); }
+        .before-image{ width:100%; height:300px; object-fit:cover; border-radius:8px; margin-bottom:20px; }
+
+        .bike-detail-description{ line-height:1.8; margin-bottom:30px; padding:20px; background-color:#f9f9f9; border-radius:8px; }
+        .bike-specs{ display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:15px; margin-bottom:30px; }
+        .spec-item{ background-color:#f9f9f9; padding:15px; border-radius:8px; text-align:center; }
+        .spec-item h4{ color:var(--dirt-orange); margin-bottom:5px; }
+
+        /* FOOTER STYLES */
+        footer {
+            background-color: var(--dirt-dark);
+            color: white;
+            padding: 50px 0 30px;
+            margin-top: 50px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 40px;
+        }
+
+        .footer-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            min-height: 200px;
+            padding: 0 15px;
+            text-align: center;
+        }
+
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--dirt-orange);
+        }
+
+        .footer-section p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background-color: var(--dirt-orange);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 900px) {
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .footer-section {
+                min-height: auto;
+                padding: 0 10px;
+            }
+        }
+        
+        /* Styles for hiding top bar on mobile scroll */
+        .top-bar.hidden {
+            transform: translateY(-100%);
+        }
+        
+        @media (max-width:1024px) { 
+            .nav-buttons{ flex-wrap:wrap; justify-content:flex-end; } 
+        }
+        @media (max-width:900px) { 
+            .top-bar{ 
+                flex-direction:column; 
+                gap:15px; 
+                padding:15px 20px;
+                transition: transform 0.3s ease-in-out;
+            } 
+            .top-right-section{ align-items:center; width:100% } 
+            .nav-buttons{ justify-content:center } 
+            .site-title{ text-align:center } 
+        }
+        @media (max-width:768px) { 
+            .hero h1{ font-size:2.5rem } 
+            .hero-subtitle{ font-size:1.1rem } 
+            .gallery{ grid-template-columns:1fr } 
+            .site-title{ font-size:1.6rem } 
+            .intro-text{ padding:20px; margin:0 15px 40px } 
+            .partners-grid{ grid-template-columns:1fr } 
+            .bike-detail-gallery{ grid-template-columns:1fr } 
+            .bike-specs{ grid-template-columns:1fr } 
+            .main-cover-image{ height:250px } 
+            .before-image{ height:250px } 
+        }
+        @media (max-width:600px) { 
+            .nav-buttons{ flex-direction:column; width:100% } 
+            .nav-button{ width:100%; justify-content:center } 
+            .modal-content{ padding:20px; margin:20px auto } 
+            .rebuilding-gallery{ grid-template-columns:1fr } 
+        }
+        @media (max-width:480px) { 
+            .hero{ padding:70px 15px } 
+            .hero h1{ font-size:2rem } 
+            .section-title{ font-size:1.8rem } 
+            .footer-content{ grid-template-columns:1fr } 
+            .social-links-top{ gap:10px } 
+            .social-links-top a{ font-size:1.1rem } 
+            .bike-detail-header h2{ font-size:1.6rem } 
+            .main-cover-image{ height:200px } 
+            .before-image{ height:200px } 
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar - With Right-Aligned Social Links -->
+    <div class="top-bar" id="topBar">
+        <div class="site-title">DIRT <span>BIKE</span> BUILDS</div>
+        <div class="top-right-section">
+            <div class="social-links-top">
+                <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-button active" data-target="builds">
+                    <i class="fas fa-bicycle"></i>
+                    <span>Builds</span>
+                </button>
+                <button class="nav-button" data-target="current-projects">
+                    <i class="fas fa-tools"></i>
+                    <span>Current Projects</span>
+                </button>
+                <button class="nav-button" data-target="about-me">
+                    <i class="fas fa-user"></i>
+                    <span>About Me</span>
+                </button>
+                <button class="nav-button" data-target="who-i-work-with">
+                    <i class="fas fa-handshake"></i>
+                    <span>Who I Work With</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Section with Dynamic Background -->
+    <header class="hero builds-hero" id="mainHero">
+        <h1 id="heroTitle">BIKE BUILDS</h1>
+        <div class="hero-subtitle" id="heroSubtitle">
+            Frame-up bike builds from over the years
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="container">
+        <!-- Builds Section (Default/Active) -->
+        <section id="builds" class="content-section active">
+            <div class="intro-text">
+                <p>My builds have evolved as I've honed my skills, starting with the goal of reviving old blown-up bikes and growing into a passion for giving motorcycles new life. I specialize in rebuilding older 2-strokes into modernized versions that look and perform like current production models. Each build is a labor of love, transforming neglected machines into reliable trail companions.</p>
+            </div>
+
+            <h2 class="section-title">Featured Builds</h2>
+
+            <div class="gallery" id="builds-gallery">
+                <!-- Dynamic bike cards will be added here -->
+            </div>
+        </section>
+
+        <!-- Current Projects Section -->
+        <section id="current-projects" class="content-section">
+            <div class="intro-text">
+                <p>These are the bikes I'm currently working on. Each project is at a different stage of restoration, from complete teardown to final assembly. I document the entire process so you can follow along as these bikes transform from neglected machines into trail-ready beauties.</p>
+            </div>
+
+            <h2 class="section-title">Current Projects</h2>
+
+            <div class="gallery" id="projects-gallery">
+                <!-- Dynamic project cards will be added here -->
+            </div>
+        </section>
+
+        <!-- About Me Section -->
+        <section id="about-me" class="content-section">
+            <h2 class="section-title">About Me</h2>
+            
+            <div class="about-content">
+                <div class="about-text">
+                    <p>I'm a passionate dirt bike enthusiast who specializes in frame-up restorations of all types of bikes. Though I haven't been doing this professionally for decades, my dedication to quality work and attention to detail has helped me develop the skills needed to bring these machines back to life.</p>
+                    <p>My approach is simple: take a bike that's been neglected or abandoned, and transform it into something that not only looks great but performs even better. I work on everything from vintage two-strokes to modern four-strokes, finding joy in the process of restoration and the satisfaction of hearing an engine roar back to life.</p>
+                    <p>Each build is a learning experience, and I'm constantly expanding my knowledge of mechanics, fabrication, and customization. What started as a hobby has grown into a true passion that I'm excited to share with others who appreciate these incredible machines.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Who I Work With Section -->
+        <section id="who-i-work-with" class="content-section">
+            <h2 class="section-title">Who I Work With</h2>
+            
+            <div class="partners-content">
+                <div class="partners-grid">
+                    <div class="partner-card">
+                        <h3>Randburg Moto Experts</h3>
+                        <p>These incredible mechanics based in Randburg near Randburg School have been invaluable to my builds. They've helped me with countless small repairs and adjustments, never charging a cent for their assistance. Their expertise and generosity have been crucial to my restoration projects.</p>
+                    </div>
+                    
+                    <div class="partner-card">
+                        <h3>Randburg Powder Coating</h3>
+                        <p>Located just a short ride from the Randburg area, this team provides exceptional powder coating services. They've worked on several of my frames and components, delivering durable, show-quality finishes that withstand the toughest trail conditions.</p>
+                    </div>
+                    
+                    <div class="partner-card">
+                        <h3>Local Parts Suppliers</h3>
+                        <p>I've built relationships with several local parts suppliers in the Gauteng area who understand the specific needs of dirt bike restoration. They help source both OEM and quality aftermarket components, often going the extra mile to find rare parts.</p>
+                    </div>
+                    
+                    <div class="partner-card">
+                        <h3>Randburg Graphics Design</h3>
+                        <p>A talented local designer who creates custom graphics that make each build unique. Their understanding of off-road aesthetics and durable material selection ensures the graphics look great and withstand the elements.</p>
+                    </div>
+                </div>
+                
+                <div class="about-text">
+                    <p>I'm incredibly grateful for the support from these local Randburg businesses. Their expertise, generosity, and shared passion for quality work have been essential to my projects. I firmly believe in supporting local businesses and building lasting relationships within our community.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bike Detail Modal -->
+    <div id="bikeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="bike-detail-header">
+                <h2 id="modalBikeName"></h2>
+                <div class="bike-detail-meta">
+                    <span id="modalBikeYear"></span>
+                    <span id="modalBikeCC"></span>
+                </div>
+            </div>
+            
+            <!-- Completed Project/Current State Section -->
+            <div id="completedProjectSection" class="completed-project-section">
+                <h3>Completed Project</h3>
+                <img src="" alt="Completed Project" id="completedImage" class="main-cover-image">
+            </div>
+            
+            <div id="currentStateSection" class="current-state-section" style="display:none;">
+                <h3>Current State</h3>
+                <img src="" alt="Current State" id="currentStateImage" class="main-cover-image">
+            </div>
+            
+            <!-- Rebuilding Process Section -->
+            <div class="rebuilding-process-section">
+                <h3>Rebuilding Process</h3>
+                <div class="rebuilding-gallery" id="rebuildingGallery">
+                    <!-- Rebuilding process images will be added here -->
+                </div>
+            </div>
+            
+            <!-- Before Section -->
+            <div class="before-section">
+                <h3>Before</h3>
+                <img src="" alt="Before" id="beforeImage" class="before-image">
+            </div>
+            
+            <div class="bike-detail-description" id="modalDescription">
+                <!-- Description will be inserted here -->
+            </div>
+            
+            <div class="bike-specs" id="modalSpecs">
+                <!-- Specifications will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Dirt Bike Builds</h3>
+                <p>We specialize in frame-up restorations of classic dirt bikes, bringing new life to these iconic machines with modern performance and reliability.</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <p>Follow our latest builds and restoration projects:</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Contact Information</h3>
+                <p><i class="fas fa-envelope"></i> contact@dirtbikebuilds.com</p>
+                <p><i class="fas fa-phone"></i> (123) 456-7890</p>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2023 Dirt Bike Builds. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        /* -----------------------
+           Utility helpers
+           ----------------------- */
+        function slugify(text) {
+            return String(text).toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w\-]+/g, '')
+                .replace(/\-\-+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '');
+        }
+        function escapeHtml(unsafe) {
+            if (!unsafe) return '';
+            return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Format time for audio player (seconds to MM:SS)
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return "0:00";
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = Math.floor(seconds % 60);
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+
+        /* -----------------------
+           Main page behavior
+           ----------------------- */
+        document.addEventListener('DOMContentLoaded', function() {
+            const navButtons = document.querySelectorAll('.nav-button');
+            const contentSections = document.querySelectorAll('.content-section');
+            const hero = document.getElementById('mainHero');
+            const heroTitle = document.getElementById('heroTitle');
+            const heroSubtitle = document.getElementById('heroSubtitle');
+            const modal = document.getElementById('bikeModal');
+            const closeModal = document.querySelector('.close-modal');
+            const buildsGallery = document.getElementById('builds-gallery');
+            const projectsGallery = document.getElementById('projects-gallery');
+            let scrollPosition = 0;
+
+            // Initialize bikeData as empty objects
+            window.buildsData = {};
+            window.projectsData = {};
+
+            // Variables for scroll behavior
+            let lastScrollTop = 0;
+            const topBar = document.getElementById('topBar');
+            const scrollThreshold = 50;
+            let heroHeight = hero.offsetHeight;
+            
+            // Calculate hero height initially and on resize
+            function calculateHeroHeight() {
+                heroHeight = hero.offsetHeight;
+            }
+            
+            window.addEventListener('resize', calculateHeroHeight);
+            calculateHeroHeight();
+
+            // Scroll to top on page load/refresh
+            window.addEventListener('beforeunload', function() {
+                window.scrollTo(0, 0);
+            });
+            
+            window.addEventListener('load', function() {
+                window.scrollTo(0, 0);
+            });
+
+            // Hero content for each section
+            const heroContent = {
+                'builds': {
+                    title: 'BIKE BUILDS',
+                    subtitle: 'Frame-up bike builds from over the years',
+                    imageClass: 'builds-hero'
+                },
+                'current-projects': {
+                    title: 'CURRENT PROJECTS',
+                    subtitle: 'Bikes currently under restoration',
+                    imageClass: 'projects-hero'
+                },
+                'about-me': {
+                    title: 'ABOUT ME',
+                    subtitle: 'Get to know the builder behind the projects',
+                    imageClass: 'about-hero'
+                },
+                'who-i-work-with': {
+                    title: 'PARTNERS',
+                    subtitle: 'The talented people and companies I work with',
+                    imageClass: 'partners-hero'
+                }
+            };
+
+            // Function to show a section
+            function showSection(sectionId) {
+                contentSections.forEach(section => section.classList.remove('active'));
+                const el = document.getElementById(sectionId);
+                if (el) el.classList.add('active');
+
+                navButtons.forEach(button => {
+                    if (button.getAttribute('data-target') === sectionId) button.classList.add('active');
+                    else button.classList.remove('active');
+                });
+
+                // Update hero section with appropriate content
+                if (heroContent[sectionId]) {
+                    const content = heroContent[sectionId];
+                    heroTitle.textContent = content.title;
+                    heroSubtitle.textContent = content.subtitle;
+                    
+                    // Remove all hero classes and add the appropriate one
+                    hero.className = 'hero';
+                    hero.classList.add(content.imageClass);
+                }
+
+                // Recalculate hero height after switching sections
+                setTimeout(calculateHeroHeight, 100);
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    showSection(target);
+                });
+            });
+
+            // Improved function to handle scroll behavior for top bar on mobile
+            function handleScroll() {
+                if (window.innerWidth > 900) return; // Only apply on mobile devices
+
+                const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+                
+                // Always show top bar when at the top of the page
+                if (currentScroll <= 10) {
+                    topBar.classList.remove('hidden');
+                    lastScrollTop = currentScroll;
+                    return;
+                }
+                
+                // Only hide the top bar if we've scrolled past the hero section
+                if (currentScroll > heroHeight) {
+                    if (currentScroll > lastScrollTop) {
+                        // Scrolling down - hide the top bar
+                        topBar.classList.add('hidden');
+                    } else {
+                        // Scrolling up - show the top bar
+                        topBar.classList.remove('hidden');
+                    }
+                } else {
+                    // Still in hero section - always show the top bar
+                    topBar.classList.remove('hidden');
+                }
+                
+                lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+            }
+
+            // Throttle the scroll event for better performance
+            function throttle(func, wait) {
+                let timeout = null;
+                let previous = 0;
+                
+                return function() {
+                    const now = Date.now();
+                    const remaining = wait - (now - previous);
+                    
+                    if (remaining <= 0 || remaining > wait) {
+                        if (timeout) {
+                            clearTimeout(timeout);
+                            timeout = null;
+                        }
+                        
+                        previous = now;
+                        func.apply(this, arguments);
+                    } else if (!timeout) {
+                        timeout = setTimeout(() => {
+                            previous = Date.now();
+                            timeout = null;
+                            func.apply(this, arguments);
+                        }, remaining);
+                    }
+                };
+            }
+
+            // Add scroll event listener with throttling
+            window.addEventListener('scroll', throttle(handleScroll, 100));
+
+            // Sound player functionality
+            function setupSoundPlayer(soundFile, container) {
+                const audio = new Audio(soundFile);
+                
+                // Get UI elements
+                const playBtn = container.querySelector('.play-btn');
+                const pauseBtn = container.querySelector('.pause-btn');
+                const resetBtn = container.querySelector('.reset-btn');
+                const progressBar = container.querySelector('.progress-bar');
+                const timeDisplay = container.querySelector('.sound-time');
+                const soundWaves = container.querySelector('.sound-waves');
+                
+                let isPlaying = false;
+                let progressInterval;
+                
+                // Update progress bar and time display
+                function updateProgress() {
+                    if (audio.duration) {
+                        const percent = (audio.currentTime / audio.duration) * 100;
+                        progressBar.style.width = percent + '%';
+                        timeDisplay.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+                    }
+                }
+                
+                // Start updating progress
+                function startProgress() {
+                    clearInterval(progressInterval);
+                    progressInterval = setInterval(updateProgress, 100);
+                }
+                
+                // Stop updating progress
+                function stopProgress() {
+                    clearInterval(progressInterval);
+                }
+                
+                // Play audio
+                function play() {
+                    audio.play().then(() => {
+                        isPlaying = true;
+                        playBtn.disabled = true;
+                        pauseBtn.disabled = false;
+                        soundWaves.classList.add('active');
+                        startProgress();
+                    }).catch(error => {
+                        console.error('Audio playback failed:', error);
+                        // Show error message to user
+                        timeDisplay.textContent = 'Audio unavailable';
+                    });
+                }
+                
+                // Pause audio
+                function pause() {
+                    audio.pause();
+                    isPlaying = false;
+                    playBtn.disabled = false;
+                    pauseBtn.disabled = true;
+                    soundWaves.classList.remove('active');
+                    stopProgress();
+                }
+                
+                // Reset audio
+                function reset() {
+                    audio.currentTime = 0;
+                    updateProgress();
+                    if (isPlaying) {
+                        audio.play();
+                    }
+                }
+                
+                // Event listeners for buttons
+                playBtn.addEventListener('click', play);
+                pauseBtn.addEventListener('click', pause);
+                resetBtn.addEventListener('click', reset);
+                
+                // Audio event listeners
+                audio.addEventListener('ended', () => {
+                    pause();
+                    reset();
+                });
+                
+                audio.addEventListener('loadedmetadata', () => {
+                    updateProgress();
+                });
+                
+                audio.addEventListener('error', (e) => {
+                    console.error('Audio loading error:', e);
+                    timeDisplay.textContent = 'Audio unavailable';
+                    playBtn.disabled = true;
+                    pauseBtn.disabled = true;
+                    resetBtn.disabled = true;
+                });
+                
+                // Initialize UI
+                pauseBtn.disabled = true;
+                updateProgress();
+                
+                return {
+                    play: play,
+                    pause: pause,
+                    reset: reset,
+                    isPlaying: () => isPlaying
+                };
+            }
+
+            // showBikeDetails function with correct image mapping
+            function showBikeDetails(bikeId, isProject = false) {
+                const bike = isProject ? window.projectsData[bikeId] : window.buildsData[bikeId];
+                if (!bike) return;
+
+                // Save current scroll position and lock background
+                scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+                document.body.classList.add('modal-open');
+                document.body.style.top = `-${scrollPosition}px`;
+
+                // Populate modal with bike data
+                document.getElementById('modalBikeName').textContent = bike.name;
+                document.getElementById('modalBikeYear').innerHTML = `<i class="fas fa-calendar-alt"></i> ${bike.year}`;
+                document.getElementById('modalBikeCC').innerHTML = `<i class="fas fa-tachometer-alt"></i> ${bike.cc}`;
+                document.getElementById('modalDescription').textContent = bike.description;
+
+                // Show appropriate section based on whether it's a project or build
+                if (isProject) {
+                    document.getElementById('completedProjectSection').style.display = 'none';
+                    document.getElementById('currentStateSection').style.display = 'block';
+                    document.getElementById('currentStateImage').src = bike.currentStateImage;
+                    document.getElementById('currentStateImage').alt = bike.name + ' Current State';
+                } else {
+                    document.getElementById('completedProjectSection').style.display = 'block';
+                    document.getElementById('currentStateSection').style.display = 'none';
+                    document.getElementById('completedImage').src = bike.completedImage;
+                    document.getElementById('completedImage').alt = bike.name + ' Completed';
+                }
+
+                // Create rebuilding process images
+                const rebuildingGallery = document.getElementById('rebuildingGallery');
+                rebuildingGallery.innerHTML = '';
+                (bike.rebuildingImages || []).forEach(imageUrl => {
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.alt = bike.name + ' Rebuilding Process';
+                    img.className = 'rebuilding-image';
+                    rebuildingGallery.appendChild(img);
+                });
+
+                // Set before image
+                document.getElementById('beforeImage').src = bike.beforeImage;
+                document.getElementById('beforeImage').alt = bike.name + ' Before';
+
+                // Create specs
+                const specs = document.getElementById('modalSpecs');
+                specs.innerHTML = '';
+                (bike.specs || []).forEach(spec => {
+                    const specItem = document.createElement('div');
+                    specItem.className = 'spec-item';
+                    specItem.innerHTML = `
+                        <h4>${spec.name}</h4>
+                        <p>${spec.value}</p>
+                    `;
+                    specs.appendChild(specItem);
+                });
+
+                // Show modal
+                modal.style.display = 'block';
+                
+                // Scroll to top of modal when it opens
+                modal.scrollTop = 0;
+            }
+
+            // Close modal
+            closeModal.addEventListener('click', function() {
+                closeModalFunction();
+            });
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) closeModalFunction();
+            });
+            function closeModalFunction() {
+                modal.style.display = 'none';
+                document.body.classList.remove('modal-open');
+                document.body.style.top = '';
+                window.scrollTo(0, scrollPosition);
+            }
+
+            // close on ESC
+            window.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.style.display === 'block') closeModalFunction();
+            });
+
+            // If there's a hash in the URL open that section
+            if (window.location.hash) {
+                const targetId = window.location.hash.substring(1);
+                if (document.getElementById(targetId)) showSection(targetId);
+            }
+
+            /* ======================
+               builds.txt loader with corrected image mapping
+               Format: Title|Description|Year|CC|Power|Torque|Weight|Restoration Time|image1.jpg,image2.jpg,...|sound_file.mp3
+               ====================== */
+            function loadBuildsTxt() {
+                fetch('builds.txt', { cache: 'no-store' })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Failed to load builds.txt — HTTP ' + response.status);
+                        return response.text();
+                    })
+                    .then(text => {
+                        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+                        if (lines.length === 0) return;
+
+                        lines.forEach((line, i) => {
+                            const parts = line.split('|');
+                            if (parts.length < 10) {
+                                console.warn('Skipping malformed line', i+1, line);
+                                return;
+                            }
+                            const title = parts[0].trim();
+                            const description = parts[1].trim();
+                            const year = parts[2].trim();
+                            const cc = parts[3].trim();
+                            const power = parts[4].trim();
+                            const torque = parts[5].trim();
+                            const weight = parts[6].trim();
+                            const restorationTime = parts[7].trim();
+                            const imagesField = parts[8].trim();
+                            const soundFile = parts[9].trim();
+                            
+                            const rawImages = imagesField.split(',').map(p => p.trim()).filter(Boolean);
+                            if (rawImages.length === 0) return;
+                            const images = rawImages.map(p => encodeURI(p));
+                            const slug = slugify(title);
+
+                            // Add to buildsData with correct image mapping
+                            window.buildsData[slug] = {
+                                name: title,
+                                year: year,
+                                cc: cc,
+                                description: description,
+                                soundFile: soundFile,
+                                // First image is the cover (used in gallery)
+                                // Second image is the completed image
+                                completedImage: images[1],
+                                // Third image is the before image
+                                beforeImage: images[2],
+                                // Remaining images are the rebuilding process images
+                                rebuildingImages: images.slice(3),
+                                specs: [
+                                    { name: "Engine", value: cc },
+                                    { name: "Power", value: power },
+                                    { name: "Torque", value: torque },
+                                    { name: "Weight", value: weight },
+                                    { name: "Restoration Time", value: restorationTime }
+                                ]
+                            };
+
+                            // Create card and append to builds gallery
+                            const card = document.createElement('div');
+                            card.className = 'bike-card';
+                            card.setAttribute('data-bike', slug);
+
+                            const img = document.createElement('img');
+                            // Use the first image as the cover
+                            img.src = images[0];
+                            img.alt = title + ' cover';
+                            img.className = 'bike-image';
+
+                            const info = document.createElement('div');
+                            info.className = 'bike-info';
+                            info.innerHTML = `
+                                <h3>${escapeHtml(title)}</h3>
+                                <p>${escapeHtml(description.length > 180 ? description.slice(0,177) + '…' : description)}</p>
+                                
+                                <!-- Sound player for completed builds -->
+                                <div class="sound-player-container">
+                                    <div class="sound-player-controls">
+                                        <button class="sound-control play-btn"><i class="fas fa-play"></i> Play</button>
+                                        <button class="sound-control pause-btn"><i class="fas fa-pause"></i> Pause</button>
+                                        <button class="sound-control reset-btn"><i class="fas fa-undo"></i> Reset</button>
+                                        <span class="sound-time">0:00 / 0:00</span>
+                                    </div>
+                                    <div class="progress-container">
+                                        <div class="progress-bar"></div>
+                                    </div>
+                                    <div class="sound-waves">
+                                        <div class="wave"></div>
+                                        <div class="wave"></div>
+                                        <div class="wave"></div>
+                                        <div class="wave"></div>
+                                        <div class="wave"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bike-meta">
+                                    <span><i class="fas fa-calendar-alt"></i> ${escapeHtml(year)}</span>
+                                    <span><i class="fas fa-tachometer-alt"></i> ${escapeHtml(cc)}</span>
+                                </div>
+                            `;
+
+                            card.appendChild(img);
+                            card.appendChild(info);
+                            
+                            // Setup sound functionality
+                            const soundContainer = card.querySelector('.sound-player-container');
+                            const sound = setupSoundPlayer(soundFile, soundContainer);
+                            
+                            card.addEventListener('click', function(e) {
+                                // Don't open modal if clicking on sound controls
+                                if (e.target.closest('.sound-player-container')) {
+                                    return;
+                                }
+                                // Pause sound when opening modal
+                                if (sound.isPlaying()) {
+                                    sound.pause();
+                                }
+                                showBikeDetails(slug, false); 
+                            });
+                            
+                            buildsGallery.appendChild(card);
+                        });
+                    })
+                    .catch(err => {
+                        console.error('Failed to fetch builds.txt', err);
+                    });
+            }
+
+            /* ======================
+               projects.txt loader with corrected image mapping
+               Format: Title|Description|Year|CC|Power|Torque|Weight|Status|image1.jpg,image2.jpg,...|progress%
+               ====================== */
+            function loadProjectsTxt() {
+                fetch('projects.txt', { cache: 'no-store' })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Failed to load projects.txt — HTTP ' + response.status);
+                        return response.text();
+                    })
+                    .then(text => {
+                        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+                        if (lines.length === 0) return;
+
+                        lines.forEach((line, i) => {
+                            const parts = line.split('|');
+                            if (parts.length < 10) {
+                                console.warn('Skipping malformed line', i+1, line);
+                                return;
+                            }
+                            const title = parts[0].trim();
+                            const description = parts[1].trim();
+                            const year = parts[2].trim();
+                            const cc = parts[3].trim();
+                            const power = parts[4].trim();
+                            const torque = parts[5].trim();
+                            const weight = parts[6].trim();
+                            const status = parts[7].trim();
+                            const imagesField = parts[8].trim();
+                            const progress = parts[9].trim();
+                            
+                            const rawImages = imagesField.split(',').map(p => p.trim()).filter(Boolean);
+                            if (rawImages.length === 0) return;
+                            const images = rawImages.map(p => encodeURI(p));
+                            const slug = slugify(title);
+
+                            // Add to projectsData with correct image mapping
+                            window.projectsData[slug] = {
+                                name: title,
+                                year: year,
+                                cc: cc,
+                                description: description,
+                                // First image is the cover (used in gallery)
+                                // Second image is the current state image
+                                currentStateImage: images[1],
+                                // Third image is the before image
+                                beforeImage: images[2],
+                                // Remaining images are the rebuilding process images
+                                rebuildingImages: images.slice(3),
+                                progress: progress,
+                                specs: [
+                                    { name: "Engine", value: cc },
+                                    { name: "Power", value: power },
+                                    { name: "Torque", value: torque },
+                                    { name: "Weight", value: weight },
+                                    { name: "Status", value: status }
+                                ]
+                            };
+
+                            // Create card and append to projects gallery
+                            const card = document.createElement('div');
+                            card.className = 'bike-card';
+                            card.setAttribute('data-bike', slug);
+
+                            const img = document.createElement('img');
+                            // Use the first image as the cover
+                            img.src = images[0];
+                            img.alt = title + ' cover';
+                            img.className = 'bike-image';
+
+                            const info = document.createElement('div');
+                            info.className = 'bike-info';
+                            info.innerHTML = `
+                                <h3>${escapeHtml(title)}</h3>
+                                <p>${escapeHtml(description.length > 180 ? description.slice(0,177) + '…' : description)}</p>
+                                
+                                <!-- Progress bar for current projects -->
+                                <div class="progress-container">
+                                    <div class="progress-bar" style="width: ${progress};"></div>
+                                </div>
+                                <div class="progress-text">${progress} Complete</div>
+                                
+                                <div class="bike-meta">
+                                    <span><i class="fas fa-calendar-alt"></i> ${escapeHtml(year)}</span>
+                                    <span><i class="fas fa-tachometer-alt"></i> ${escapeHtml(cc)}</span>
+                                </div>
+                            `;
+
+                            card.appendChild(img);
+                            card.appendChild(info);
+                            card.addEventListener('click', function() { showBikeDetails(slug, true); });
+                            projectsGallery.appendChild(card);
+                        });
+                    })
+                    .catch(err => {
+                        console.error('Failed to fetch projects.txt', err);
+                    });
+            }
+
+            // run loaders
+            loadBuildsTxt();
+            loadProjectsTxt();
+        });
+    </script>
+</body>
+</html>
