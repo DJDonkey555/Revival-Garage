@@ -624,14 +624,17 @@
             const topBar = document.getElementById('topBar');
             const scrollThreshold = 50;
             let heroHeight = hero.offsetHeight;
+            let topBarHeight = topBar.offsetHeight;
+            let isTopBarVisible = true;
             
             // Calculate hero height initially and on resize
-            function calculateHeroHeight() {
+            function calculateHeights() {
                 heroHeight = hero.offsetHeight;
+                topBarHeight = topBar.offsetHeight;
             }
             
-            window.addEventListener('resize', calculateHeroHeight);
-            calculateHeroHeight();
+            window.addEventListener('resize', calculateHeights);
+            calculateHeights();
 
             // Scroll to top on page load/refresh
             window.addEventListener('beforeunload', function() {
@@ -689,7 +692,7 @@
                 }
 
                 // Recalculate hero height after switching sections
-                setTimeout(calculateHeroHeight, 100);
+                setTimeout(calculateHeights, 100);
                 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
@@ -710,22 +713,36 @@
                 // Always show top bar when at the top of the page
                 if (currentScroll <= 10) {
                     topBar.classList.remove('hidden');
+                    isTopBarVisible = true;
                     lastScrollTop = currentScroll;
                     return;
                 }
                 
-                // Only hide the top bar if we've scrolled past the hero section
+                // Only hide/show the top bar if we've scrolled past the hero section
                 if (currentScroll > heroHeight) {
-                    if (currentScroll > lastScrollTop) {
-                        // Scrolling down - hide the top bar
-                        topBar.classList.add('hidden');
-                    } else {
-                        // Scrolling up - show the top bar
-                        topBar.classList.remove('hidden');
+                    // We're well past the hero section
+                    if (currentScroll > lastScrollTop && currentScroll > heroHeight + topBarHeight) {
+                        // Scrolling down and past the hero section - hide the top bar
+                        if (isTopBarVisible) {
+                            topBar.classList.add('hidden');
+                            isTopBarVisible = false;
+                        }
+                    } else if (currentScroll < lastScrollTop) {
+                        // Scrolling up - only show if we're near the top
+                        if (currentScroll < heroHeight + 100) {
+                            // We're getting close to the top, show the bar
+                            if (!isTopBarVisible) {
+                                topBar.classList.remove('hidden');
+                                isTopBarVisible = true;
+                            }
+                        }
                     }
                 } else {
                     // Still in hero section - always show the top bar
-                    topBar.classList.remove('hidden');
+                    if (!isTopBarVisible) {
+                        topBar.classList.remove('hidden');
+                        isTopBarVisible = true;
+                    }
                 }
                 
                 lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
